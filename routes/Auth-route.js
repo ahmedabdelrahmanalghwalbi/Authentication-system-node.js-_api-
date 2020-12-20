@@ -21,7 +21,7 @@ router.post('/register', async(req, res, next) => {
         });
         const salt = await bcrypt.genSalt(10);
         newUser.password = await bcrypt.hash(newUser.password, salt);
-        const savedUser = await newUser.save();
+        await newUser.save();
         const SECRET_Key = "jwbsecretkey";
         const token = Jwt.sign({
             _id: newUser.id,
@@ -63,6 +63,23 @@ router.post('/login', async (req, res, next) => {
         next(error);
     } 
 });
+
+//logout router
+router.post('/logout', (req, res, next) => {
+     User
+        .remove({ "email": req.body.email })
+        .exec()
+        .then(result => {
+            res.status(200).json({
+                message: 'User Deleted Successfully!'
+            });
+        })
+        .catch(error => {
+            error.message = 'Could Not Delete User!';
+            next(error);
+        });
+});
+
 
 
 module.exports = router;
